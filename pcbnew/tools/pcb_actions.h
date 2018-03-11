@@ -402,6 +402,9 @@ public:
     static TOOL_ACTION copySettingsToPads;
     static TOOL_ACTION globalEditPads;
 
+    /// Key sequence
+    static TOOL_ACTION keySequenceCollect;
+
 
     ///> @copydoc COMMON_ACTIONS::TranslateLegacyId()
     virtual OPT<TOOL_EVENT> TranslateLegacyId( int aId ) override;

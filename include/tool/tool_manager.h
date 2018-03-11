@@ -30,6 +30,7 @@
 #include <map>
 #include <list>
 #include <stack>
+#include <vector>
 
 #include <tool/tool_base.h>
 #include <view/view_controls.h>
@@ -158,7 +159,7 @@ public:
     }
 
     ///> @copydoc ACTION_MANAGER::GetHotKey()
-    int GetHotKey( const TOOL_ACTION& aAction );
+    std::vector<int> GetHotKey( const TOOL_ACTION& aAction );
 
     ///> @copydoc ACTION_MANAGER::UpdateHotKeys()
     void UpdateHotKeys();

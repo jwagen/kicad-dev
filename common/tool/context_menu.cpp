@@ -292,11 +292,13 @@ void CONTEXT_MENU::updateHotKeys()
     {
         int id = it->first;
         const TOOL_ACTION& action = *it->second;
-        int key = toolMgr->GetHotKey( action ) & ~MD_MODIFIER_MASK;
+        //TODO: Only first key in sequence used
+        int key = toolMgr->GetHotKey( action )[0] & ~MD_MODIFIER_MASK;
 
         if( key )
         {
-            int mod = toolMgr->GetHotKey( action ) & MD_MODIFIER_MASK;
+            //TODO
+            int mod = toolMgr->GetHotKey( action )[0] & MD_MODIFIER_MASK;
             int flags = 0;
             wxMenuItem* item = FindChildItem( id );
 

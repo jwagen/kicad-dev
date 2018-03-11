@@ -74,9 +74,9 @@ void ACTION_MANAGER::RegisterAction( TOOL_ACTION* aAction )
 void ACTION_MANAGER::UnregisterAction( TOOL_ACTION* aAction )
 {
     m_actionNameIndex.erase( aAction->m_name );
-    int hotkey = GetHotKey( *aAction );
+    std::vector<int> hotkey = GetHotKey( *aAction );
 
-    if( hotkey )
+    if( hotkey[0] )
     {
         std::list<TOOL_ACTION*>& actions = m_actionHotKeys[hotkey];
         std::list<TOOL_ACTION*>::iterator action = std::find( actions.begin(), actions.end(), aAction );
@@ -110,13 +110,14 @@ TOOL_ACTION* ACTION_MANAGER::FindAction( const std::string& aActionName ) const
 
 bool ACTION_MANAGER::RunHotKey( int aHotKey ) const
 {
+    //Do stuff to match sequences
     int key = aHotKey & ~MD_MODIFIER_MASK;
     int mod = aHotKey & MD_MODIFIER_MASK;
 
     if( key >= 'a' && key <= 'z' )
         key = std::toupper( key );
 
-    HOTKEY_LIST::const_iterator it = m_actionHotKeys.find( key | mod );
+    HOTKEY_LIST::const_iterator it = m_actionHotKeys.find( {key | mod });
 
     // If no luck, try without Shift, to handle keys that require it
     // e.g. to get ? you need to press Shift+/ without US keyboard layout
@@ -124,7 +125,7 @@ bool ACTION_MANAGER::RunHotKey( int aHotKey ) const
     // different combination
     if( it == m_actionHotKeys.end() )
     {
-        it = m_actionHotKeys.find( key | ( mod & ~MD_SHIFT ) );
+        it = m_actionHotKeys.find( {key | ( mod & ~MD_SHIFT )} );
 
         if( it == m_actionHotKeys.end() )
             return false; // no appropriate action found for the hotkey
@@ -180,12 +181,12 @@ bool ACTION_MANAGER::RunHotKey( int aHotKey ) const
 }
 
 
-int ACTION_MANAGER::GetHotKey( const TOOL_ACTION& aAction ) const
+std::vector<int> ACTION_MANAGER::GetHotKey( const TOOL_ACTION& aAction ) const
 {
-    std::map<int, int>::const_iterator it = m_hotkeys.find( aAction.GetId() );
+    std::map<int, std::vector<int>>::const_iterator it = m_hotkeys.find( aAction.GetId() );
 
     if( it == m_hotkeys.end() )
-        return 0;
+        return {};
 
     return it->second;
 }
@@ -199,9 +200,9 @@ void ACTION_MANAGER::UpdateHotKeys()
     for( const auto& actionName : m_actionNameIndex )
     {
         TOOL_ACTION* action = actionName.second;
-        int hotkey = processHotKey( action );
+        std::vector<int> hotkey = processHotKey( action );
 
-        if( hotkey > 0 )
+        if( hotkey[0] )
         {
             m_actionHotKeys[hotkey].push_back( action );
             m_hotkeys[action->GetId()] = hotkey;
@@ -226,46 +227,46 @@ void ACTION_MANAGER::UpdateHotKeys()
 }
 
 
-int ACTION_MANAGER::processHotKey( TOOL_ACTION* aAction )
+std::vector<int> ACTION_MANAGER::processHotKey( TOOL_ACTION* aAction )
 {
-    int hotkey = aAction->getDefaultHotKey();
+    std::vector<int> hotkey = aAction->getDefaultHotKey();
 
-    if( ( hotkey & TOOL_ACTION::LEGACY_HK ) )
+    if( hotkey.size() == 1 && ( hotkey[0] & TOOL_ACTION::LEGACY_HK ))
     {
-        hotkey = hotkey & ~TOOL_ACTION::LEGACY_HK;  // it leaves only HK_xxx identifier
+        hotkey[0] = hotkey[0] & ~TOOL_ACTION::LEGACY_HK;  // it leaves only HK_xxx identifier
 
         auto frame = dynamic_cast<EDA_DRAW_FRAME*>( m_toolMgr->GetEditFrame() );
         EDA_HOTKEY* hk_desc = nullptr;
 
         if( frame )
-            hk_desc = frame->GetHotKeyDescription( hotkey );
+            hk_desc = frame->GetHotKeyDescription( hotkey[0] );
 
         if( hk_desc )
         {
-            hotkey = hk_desc->m_KeyCode;
+            hotkey[0] = hk_desc->m_KeyCode;
 
             // Convert modifiers to the ones used by the Tool Framework
-            if( hotkey & GR_KB_CTRL )
+            if( hotkey[0] & GR_KB_CTRL )
             {
-                hotkey &= ~GR_KB_CTRL;
-                hotkey |= MD_CTRL;
+                hotkey[0] &= ~GR_KB_CTRL;
+                hotkey[0] |= MD_CTRL;
             }
 
-            if( hotkey & GR_KB_ALT )
+            if( hotkey[0] & GR_KB_ALT )
             {
-                hotkey &= ~GR_KB_ALT;
-                hotkey |= MD_ALT;
+                hotkey[0] &= ~GR_KB_ALT;
+                hotkey[0] |= MD_ALT;
             }
 
-            if( hotkey & GR_KB_SHIFT )
+            if( hotkey[0] & GR_KB_SHIFT )
             {
-                hotkey &= ~GR_KB_SHIFT;
-                hotkey |= MD_SHIFT;
+                hotkey[0] &= ~GR_KB_SHIFT;
+                hotkey[0] |= MD_SHIFT;
             }
         }
         else
         {
-            hotkey = 0;
+            hotkey = {};
         }
     }
 

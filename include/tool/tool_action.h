@@ -28,6 +28,7 @@
 
 #include <string>
 #include <cassert>
+#include <vector>
 
 #include <tool/tool_event.h>
 
@@ -48,6 +49,11 @@ class TOOL_ACTION
 public:
     TOOL_ACTION( const std::string& aName, TOOL_ACTION_SCOPE aScope = AS_CONTEXT,
             int aDefaultHotKey = 0, const wxString& aMenuItem = wxEmptyString,
+            const wxString& aMenuDesc = wxEmptyString, const BITMAP_OPAQUE* aIcon = NULL,
+            TOOL_ACTION_FLAGS aFlags = AF_NONE, void* aParam = NULL );
+
+    TOOL_ACTION( const std::string& aName, TOOL_ACTION_SCOPE aScope = AS_CONTEXT,
+            std::vector<int> = {0}, const wxString& aMenuItem = wxEmptyString,
             const wxString& aMenuDesc = wxEmptyString, const BITMAP_OPAQUE* aIcon = NULL,
             TOOL_ACTION_FLAGS aFlags = AF_NONE, void* aParam = NULL );
 
@@ -183,7 +189,7 @@ private:
 
     /// Returns the hot key assigned in the object definition. It may refer to a legacy hot key setting
     /// (if LEGACY_HK flag is set).
-    int getDefaultHotKey()
+    std::vector<int> getDefaultHotKey()
     {
         return m_defaultHotKey;
     }
@@ -195,7 +201,7 @@ private:
     TOOL_ACTION_SCOPE m_scope;
 
     /// Default hot key that activates the action.
-    const int m_defaultHotKey;
+    const std::vector<int> m_defaultHotKey;
 
     /// Menu entry text
     wxString m_menuItem;

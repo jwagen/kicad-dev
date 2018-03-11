@@ -64,6 +64,7 @@
 #include "tools/selection_tool.h"
 #include "tools/edit_tool.h"
 #include "tools/drawing_tool.h"
+#include "tools/key_sequence_tool.h"
 #include "tools/point_editor.h"
 #include "tools/pcbnew_control.h"
 #include "tools/footprint_editor_tools.h"
@@ -969,6 +970,7 @@ void FOOTPRINT_EDIT_FRAME::setupTools()
     m_toolManager->RegisterTool( new ZOOM_TOOL );
     m_toolManager->RegisterTool( new EDIT_TOOL );
     m_toolManager->RegisterTool( new PAD_TOOL );
+    m_toolManager->RegisterTool( new KEY_SEQUENCE_TOOL );
     m_toolManager->RegisterTool( new DRAWING_TOOL );
     m_toolManager->RegisterTool( new POINT_EDITOR );
     m_toolManager->RegisterTool( new PCBNEW_CONTROL );
