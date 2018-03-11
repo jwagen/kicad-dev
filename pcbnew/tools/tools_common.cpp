@@ -42,6 +42,7 @@
 #include <tools/position_relative_tool.h>
 #include <tools/zone_filler_tool.h>
 #include <tools/pcb_actions.h>
+#include <tools/key_sequence_tool.h>
 
 #include <router/router_tool.h>
 #include <router/length_tuner_tool.h>
@@ -64,4 +65,5 @@ void PCB_ACTIONS::RegisterAllTools( TOOL_MANAGER* aToolManager )
     aToolManager->RegisterTool( new MICROWAVE_TOOL );
     aToolManager->RegisterTool( new POSITION_RELATIVE_TOOL );
     aToolManager->RegisterTool( new ZONE_FILLER_TOOL );
+    aToolManager->RegisterTool( new KEY_SEQUENCE_TOOL );
 }

@@ -28,6 +28,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <vector>
 
 class TOOL_BASE;
 class TOOL_MANAGER;
@@ -51,7 +52,7 @@ public:
     /**
      * Destructor.
      * Unregisters every registered action.
-     */
+     
     ~ACTION_MANAGER();
 
     /**
@@ -86,7 +87,8 @@ public:
      * Function RunHotKey()
      * Runs an action associated with a hotkey (if there is one available).
      * @param aHotKey is the hotkey to be handled.
-     * @return True if there was an action associated with the hotkey, false otherwise.
+     * @return True if there was an action associated with the hotkey 
+     * or it is part of hotkey sequence, false otherwise.
      */
     bool RunHotKey( int aHotKey ) const;
 
@@ -95,7 +97,7 @@ public:
      * Returns the hot key associated with a given action or 0 if there is none.
      * @param aAction is the queried action.
      */
-    int GetHotKey( const TOOL_ACTION& aAction ) const;
+    std::vector<int> GetHotKey( const TOOL_ACTION& aAction ) const;
 
     /**
      * Function UpdateHotKeys()
@@ -119,7 +121,7 @@ public:
 private:
     ///> Resolves a reference to legacy hot key settings to a particular hot key.
     ///> @param aAction is the action to be resolved.
-    int processHotKey( TOOL_ACTION* aAction );
+    std::vector<int> processHotKey( TOOL_ACTION* aAction );
 
     ///> Tool manager needed to run actions
     TOOL_MANAGER* m_toolMgr;
@@ -128,11 +130,14 @@ private:
     std::map<std::string, TOOL_ACTION*> m_actionNameIndex;
 
     ///> Map for indexing actions by their hotkeys
-    typedef std::map<int, std::list<TOOL_ACTION*> > HOTKEY_LIST;
+    typedef std::map<std::vector<int>, std::list<TOOL_ACTION*> > HOTKEY_LIST;
     HOTKEY_LIST m_actionHotKeys;
 
     ///> Quick action<->hot key lookup
-    std::map<int, int> m_hotkeys;
+    std::map<int, std::vector<int>> m_hotkeys;
+
+    ///> Currently collected keys for hot key sequence
+    std::vector<int> m_collectedHotKeySequence;
 };
 
 #endif /* ACTION_MANAGER_H_ */

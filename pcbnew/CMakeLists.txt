@@ -297,6 +297,7 @@ set( PCBNEW_CLASS_SRCS
     tools/grid_helper.cpp
     tools/microwave_tool.cpp
     tools/footprint_editor_tools.cpp
+    tools/key_sequence_tool.cpp
     tools/pad_tool.cpp
     tools/pcb_actions.cpp
     tools/pcb_bright_box.cpp

@@ -26,6 +26,7 @@
 #include <map>
 #include <stack>
 #include <algorithm>
+#include <vector>
 
 #include <core/optional.h>
 
@@ -309,7 +310,7 @@ void TOOL_MANAGER::RunAction( const TOOL_ACTION& aAction, bool aNow, void* aPara
 }
 
 
-int TOOL_MANAGER::GetHotKey( const TOOL_ACTION& aAction )
+std::vector<int> TOOL_MANAGER::GetHotKey( const TOOL_ACTION& aAction )
 {
     return m_actionMgr->GetHotKey( aAction );
 }
