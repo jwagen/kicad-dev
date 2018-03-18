@@ -30,6 +30,7 @@
 #include <hotkeys_basic.h>
 #include <cctype>
 #include <cassert>
+#include <vector>
 
 ACTION_MANAGER::ACTION_MANAGER( TOOL_MANAGER* aToolManager ) :
     m_toolMgr( aToolManager )
@@ -76,7 +77,7 @@ void ACTION_MANAGER::UnregisterAction( TOOL_ACTION* aAction )
     m_actionNameIndex.erase( aAction->m_name );
     std::vector<int> hotkey = GetHotKey( *aAction );
 
-    if( hotkey[0] )
+    if( hotkey.size() > 0 && hotkey[0] )
     {
         std::list<TOOL_ACTION*>& actions = m_actionHotKeys[hotkey];
         std::list<TOOL_ACTION*>::iterator action = std::find( actions.begin(), actions.end(), aAction );
@@ -114,10 +115,13 @@ bool ACTION_MANAGER::RunHotKey( int aHotKey ) const
     int key = aHotKey & ~MD_MODIFIER_MASK;
     int mod = aHotKey & MD_MODIFIER_MASK;
 
+    int hotKeysMatched = 1;
+
     if( key >= 'a' && key <= 'z' )
         key = std::toupper( key );
 
     HOTKEY_LIST::const_iterator it = m_actionHotKeys.find( {key | mod });
+    //HOTKEY_LIST matchedHotKeysbb
 
     // If no luck, try without Shift, to handle keys that require it
     // e.g. to get ? you need to press Shift+/ without US keyboard layout
@@ -131,53 +135,72 @@ bool ACTION_MANAGER::RunHotKey( int aHotKey ) const
             return false; // no appropriate action found for the hotkey
     }
 
-    const std::list<TOOL_ACTION*>& actions = it->second;
 
-    // Choose the action that has the highest priority on the active tools stack
-    // If there is none, run the global action associated with the hot key
-    int highestPriority = -1, priority = -1;
-    const TOOL_ACTION* context = NULL;  // pointer to context action of the highest priority tool
-    const TOOL_ACTION* global = NULL;   // pointer to global action, if there is no context action
 
-    for( const TOOL_ACTION* action : actions )
+
+
+
+
+    //Only one unique hotkey sequence found, may be related to multple actions depending of context
+    if( hotKeysMatched == 1 )
     {
-        if( action->GetScope() == AS_GLOBAL )
+
+        const std::list<TOOL_ACTION*>& actions = it->second;
+
+        // Choose the action that has the highest priority on the active tools stack
+        // If there is none, run the global action associated with the hot key
+        int highestPriority = -1, priority = -1;
+        const TOOL_ACTION* context = NULL;  // pointer to context action of the highest priority tool
+        const TOOL_ACTION* global = NULL;   // pointer to global action, if there is no context action
+
+        for( const TOOL_ACTION* action : actions )
         {
-            // Store the global action for the hot key in case there was no possible
-            // context actions to run
-            assert( global == NULL );       // there should be only one global action per hot key
-            global = action;
-            continue;
-        }
-
-        TOOL_BASE* tool = m_toolMgr->FindTool( action->GetToolName() );
-
-        if( tool )
-        {
-            // Choose the action that goes to the tool with highest priority
-            // (i.e. is on the top of active tools stack)
-            priority = m_toolMgr->GetPriority( tool->GetId() );
-
-            if( priority >= 0 && priority > highestPriority )
+            if( action->GetScope() == AS_GLOBAL )
             {
-                highestPriority = priority;
-                context = action;
+                // Store the global action for the hot key in case there was no possible
+                // context actions to run
+                assert( global == NULL );       // there should be only one global action per hot key
+                global = action;
+                continue;
+            }
+
+            TOOL_BASE* tool = m_toolMgr->FindTool( action->GetToolName() );
+
+            if( tool )
+            {
+                // Choose the action that goes to the tool with highest priority
+                // (i.e. is on the top of active tools stack)
+                priority = m_toolMgr->GetPriority( tool->GetId() );
+
+                if( priority >= 0 && priority > highestPriority )
+                {
+                    highestPriority = priority;
+                    context = action;
+                }
             }
         }
+
+        if( context )
+        {
+            m_toolMgr->RunAction( *context, true );
+            return true;
+        }
+        else if( global )
+        {
+            m_toolMgr->RunAction( *global, true );
+            return true;
+        }
+    }
+    //Clear hotkey sequence if no matches is found
+    else if( hotKeysMatched == 0 )
+    {
+        m_collectedHotKeySequence.clear();
+        return false;
     }
 
-    if( context )
-    {
-        m_toolMgr->RunAction( *context, true );
-        return true;
-    }
-    else if( global )
-    {
-        m_toolMgr->RunAction( *global, true );
-        return true;
-    }
+    //Partial match
+    return true;
 
-    return false;
 }
 
 
@@ -202,7 +225,7 @@ void ACTION_MANAGER::UpdateHotKeys()
         TOOL_ACTION* action = actionName.second;
         std::vector<int> hotkey = processHotKey( action );
 
-        if( hotkey[0] )
+        if( hotkey.size() > 0 && hotkey[0] )
         {
             m_actionHotKeys[hotkey].push_back( action );
             m_hotkeys[action->GetId()] = hotkey;

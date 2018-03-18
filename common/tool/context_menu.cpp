@@ -293,26 +293,29 @@ void CONTEXT_MENU::updateHotKeys()
         int id = it->first;
         const TOOL_ACTION& action = *it->second;
         //TODO: Only first key in sequence used
-        int key = toolMgr->GetHotKey( action )[0] & ~MD_MODIFIER_MASK;
-
-        if( key )
+        if( toolMgr->GetHotKey( action ).size() )
         {
-            //TODO
-            int mod = toolMgr->GetHotKey( action )[0] & MD_MODIFIER_MASK;
-            int flags = 0;
-            wxMenuItem* item = FindChildItem( id );
+            int key = toolMgr->GetHotKey( action )[0] & ~MD_MODIFIER_MASK;
 
-            if( item )
+            if( key )
             {
-                flags |= ( mod & MD_ALT ) ? wxACCEL_ALT : 0;
-                flags |= ( mod & MD_CTRL ) ? wxACCEL_CTRL : 0;
-                flags |= ( mod & MD_SHIFT ) ? wxACCEL_SHIFT : 0;
+                //TODO
+                int mod = toolMgr->GetHotKey( action )[0] & MD_MODIFIER_MASK;
+                int flags = 0;
+                wxMenuItem* item = FindChildItem( id );
 
-                if( !flags )
-                    flags = wxACCEL_NORMAL;
+                if( item )
+                {
+                    flags |= ( mod & MD_ALT ) ? wxACCEL_ALT : 0;
+                    flags |= ( mod & MD_CTRL ) ? wxACCEL_CTRL : 0;
+                    flags |= ( mod & MD_SHIFT ) ? wxACCEL_SHIFT : 0;
 
-                wxAcceleratorEntry accel( flags, key, id, item );
-                item->SetAccel( &accel );
+                    if( !flags )
+                        flags = wxACCEL_NORMAL;
+
+                    wxAcceleratorEntry accel( flags, key, id, item );
+                    item->SetAccel( &accel );
+                }
             }
         }
     }
