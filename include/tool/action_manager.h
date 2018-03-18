@@ -52,7 +52,7 @@ public:
     /**
      * Destructor.
      * Unregisters every registered action.
-     
+     */
     ~ACTION_MANAGER();
 
     /**
@@ -90,7 +90,7 @@ public:
      * @return True if there was an action associated with the hotkey 
      * or it is part of hotkey sequence, false otherwise.
      */
-    bool RunHotKey( int aHotKey ) const;
+    bool RunHotKey( int aHotKey );
 
     /**
      * Function GetHotKey()
