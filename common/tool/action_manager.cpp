@@ -109,18 +109,57 @@ TOOL_ACTION* ACTION_MANAGER::FindAction( const std::string& aActionName ) const
 }
 
 
-bool ACTION_MANAGER::RunHotKey( int aHotKey ) const
+bool ACTION_MANAGER::RunHotKey( int aHotKey )
 {
     //Do stuff to match sequences
     int key = aHotKey & ~MD_MODIFIER_MASK;
     int mod = aHotKey & MD_MODIFIER_MASK;
 
-    int hotKeysMatched = 1;
+    int hotKeysMatched = 0;
 
     if( key >= 'a' && key <= 'z' )
         key = std::toupper( key );
 
-    HOTKEY_LIST::const_iterator it = m_actionHotKeys.find( {key | mod });
+
+    //Add key to collected keys
+    m_collectedHotKeySequence.push_back( key | mod );
+
+    HOTKEY_LIST possibleActions;
+
+    wxLogDebug( "Collected keys :" + wxString( GetHotKeyStr( m_collectedHotKeySequence ) ) );
+
+
+    //Check the collected key sequence against list of hotkeys
+    for( auto actionHotKey : m_actionHotKeys )
+    {
+        auto keySequence = actionHotKey.first;
+        int minLength = std::min( keySequence.size(), m_collectedHotKeySequence.size() );
+        //wxLogDebug( "MinimumLength: %d", minLength );
+        //wxLogDebug( "Checking key sequence: " + wxString( GetHotKeyStr( keySequence ) ) );
+
+        //Check for partial match
+        if( std::equal( keySequence.begin(), keySequence.begin() + minLength, m_collectedHotKeySequence.begin() ) )
+        {
+            //Found partial match
+            hotKeysMatched ++;
+            
+            wxLogDebug( "Found partial match: " + wxString( GetHotKeyStr( keySequence ) ) );
+            //Check for exact match
+            if( keySequence == m_collectedHotKeySequence )
+            {
+                possibleActions.insert( actionHotKey );
+            }
+
+        }
+
+    }
+    wxLogDebug( "hotKeysMatched: %d", hotKeysMatched );
+
+
+    HOTKEY_LIST::const_iterator it = possibleActions.begin();
+
+
+    //HOTKEY_LIST::const_iterator it = m_actionHotKeys.find( {key | mod });
     //HOTKEY_LIST matchedHotKeysbb
 
     // If no luck, try without Shift, to handle keys that require it
@@ -142,7 +181,7 @@ bool ACTION_MANAGER::RunHotKey( int aHotKey ) const
 
 
     //Only one unique hotkey sequence found, may be related to multple actions depending of context
-    if( hotKeysMatched == 1 )
+    if( hotKeysMatched == 1 && possibleActions.size() > 0 )
     {
         //if( action->GetScope() == AS_GLOBAL )
         //{
@@ -152,6 +191,7 @@ bool ACTION_MANAGER::RunHotKey( int aHotKey ) const
         //    global = action;
         //    continue;
         //}
+        m_collectedHotKeySequence.clear();
 
         const std::list<TOOL_ACTION*>& actions = it->second;
 
@@ -302,4 +342,20 @@ std::vector<int> ACTION_MANAGER::processHotKey( TOOL_ACTION* aAction )
     }
 
     return hotkey;
+}
+
+std::string ACTION_MANAGER::GetHotKeyStr( const TOOL_ACTION& aAction )
+{
+    std::vector<int> k = GetHotKey( aAction );
+    return GetHotKeyStr( k );
+}
+
+std::string ACTION_MANAGER::GetHotKeyStr( std::vector<int> aHotKey )
+{
+    std::string s;
+    for( auto i : aHotKey )
+    {
+        s.push_back( (char)i );
+    }
+    return s;
 }

@@ -130,7 +130,7 @@ TOOL_ACTION PCB_ACTIONS::unlock( "pcbnew.EditorControl.unlock",
         _( "Unlock" ), "" );
 
 TOOL_ACTION PCB_ACTIONS::appendBoard( "pcbnew.EditorControl.appendBoard",
-        AS_GLOBAL, 0,
+        AS_GLOBAL, ",,",
         "", "" );
 
 TOOL_ACTION PCB_ACTIONS::highlightNet( "pcbnew.EditorControl.highlightNet",

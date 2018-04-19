@@ -36,6 +36,8 @@
 #include <pcbnew_id.h>
 
 #include <core/optional.h>
+#include <wx/log.h>
+#include <wx/string.h>
 
 
 ///> Stores information about a mouse button state
@@ -368,6 +370,9 @@ void TOOL_DISPATCHER::DispatchWxEvent( wxEvent& aEvent )
     {
         wxKeyEvent* ke = static_cast<wxKeyEvent*>( &aEvent );
         key = ke->GetKeyCode();
+        wxLogDebug( wxString::Format( "KeyCode: %d   %c", key ) );
+        //wxLogDebug( wxString::Format( "keyChar: %d", ke->Get) );
+        wxLogDebug( wxString::Format( "Unicode: %c", ke->GetUnicodeKey() ) );
         keyIsSpecial = isKeySpecialCode( key );
 
         wxLogTrace( kicadTraceKeyEvent, "TOOL_DISPATCHER::DispatchWxEvent %s", dump( *ke ) );

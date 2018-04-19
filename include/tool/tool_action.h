@@ -57,6 +57,11 @@ public:
             const wxString& aMenuDesc = wxEmptyString, const BITMAP_OPAQUE* aIcon = NULL,
             TOOL_ACTION_FLAGS aFlags = AF_NONE, void* aParam = NULL );
 
+    TOOL_ACTION( const std::string& aName, TOOL_ACTION_SCOPE aScope = AS_CONTEXT,
+            std::string = "", const wxString& aMenuItem = wxEmptyString,
+            const wxString& aMenuDesc = wxEmptyString, const BITMAP_OPAQUE* aIcon = NULL,
+            TOOL_ACTION_FLAGS aFlags = AF_NONE, void* aParam = NULL );
+
     ~TOOL_ACTION();
 
     bool operator==( const TOOL_ACTION& aRhs ) const
@@ -201,7 +206,7 @@ private:
     TOOL_ACTION_SCOPE m_scope;
 
     /// Default hot key that activates the action.
-    const std::vector<int> m_defaultHotKey;
+    std::vector<int> m_defaultHotKey;
 
     /// Menu entry text
     wxString m_menuItem;

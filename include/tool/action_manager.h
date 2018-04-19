@@ -123,6 +123,9 @@ private:
     ///> @param aAction is the action to be resolved.
     std::vector<int> processHotKey( TOOL_ACTION* aAction );
 
+    std::string GetHotKeyStr( const TOOL_ACTION& aAction );
+    std::string GetHotKeyStr( std::vector<int> aHotKey);
+
     ///> Tool manager needed to run actions
     TOOL_MANAGER* m_toolMgr;
 
