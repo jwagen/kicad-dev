@@ -35,6 +35,8 @@
 #include <pcbnew_id.h>
 
 #include <core/optional.h>
+#include <wx/log.h>
+#include <wx/string.h>
 
 ///> Stores information about a mouse button state
 struct TOOL_DISPATCHER::BUTTON_STATE
@@ -365,6 +367,9 @@ void TOOL_DISPATCHER::DispatchWxEvent( wxEvent& aEvent )
     {
         wxKeyEvent* ke = static_cast<wxKeyEvent*>( &aEvent );
         key = ke->GetKeyCode();
+        wxLogDebug( wxString::Format( "KeyCode: %d   %c", key ) );
+        //wxLogDebug( wxString::Format( "keyChar: %d", ke->Get) );
+        wxLogDebug( wxString::Format( "Unicode: %c", ke->GetUnicodeKey() ) );
         keyIsSpecial = isKeySpecialCode( key );
 
         // if the key event must be skipped, skip it here if the event is a wxEVT_CHAR_HOOK
