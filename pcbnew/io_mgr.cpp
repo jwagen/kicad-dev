@@ -32,6 +32,7 @@
 #include <pcad2kicadpcb_plugin/pcad_plugin.h>
 #include <gpcb_plugin.h>
 #include <config.h>
+#include <database_plugin.h>
 
 #if defined(BUILD_GITHUB_PLUGIN)
  #include <github/github_plugin.h>
@@ -209,3 +210,4 @@ static IO_MGR::REGISTER_PLUGIN registerGithubPlugin( IO_MGR::GITHUB, wxT("Github
 #endif /* BUILD_GITHUB_PLUGIN */
 static IO_MGR::REGISTER_PLUGIN registerLegacyPlugin( IO_MGR::LEGACY, wxT("Legacy"), []() -> PLUGIN* { return new LEGACY_PLUGIN; } );
 static IO_MGR::REGISTER_PLUGIN registerGPCBPlugin( IO_MGR::GEDA_PCB, wxT("GEDA/Pcb"), []() -> PLUGIN* { return new GPCB_PLUGIN; } );
+static IO_MGR::REGISTER_PLUGIN registerDatabasePlugin( IO_MGR::DATABASE, wxT("Database"), []() -> PLUGIN* { return new DATABASE_PLUGIN; } );

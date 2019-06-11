@@ -465,6 +465,7 @@ set( PCB_COMMON_SRCS
     ../pcbnew/drc_item.cpp
     ../pcbnew/eagle_plugin.cpp
     ../pcbnew/gpcb_plugin.cpp
+    ../pcbnew/database_plugin.cpp
     ../pcbnew/io_mgr.cpp
     ../pcbnew/kicad_clipboard.cpp
     ../pcbnew/kicad_netlist_reader.cpp

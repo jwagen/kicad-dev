@@ -63,6 +63,7 @@ public:
 #if defined(BUILD_GITHUB_PLUGIN)
         GITHUB,         ///< Read only http://github.com repo holding pretty footprints
 #endif
+        DATABASE,
         // add your type here.
 
         // ALTIUM,

@@ -577,6 +577,10 @@ if( BUILD_GITHUB_PLUGIN )
     find_package( CURL REQUIRED )
 endif()
 
+# SOSI for database plugin
+#find_package(Soci REQUIRED)
+find_package(Poco 1.8.0 REQUIRED Data Util)
+
 #
 # Find Cairo library, required
 #
