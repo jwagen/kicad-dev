@@ -1099,7 +1099,7 @@
                                                     <property name="gripper">0</property>
                                                     <property name="hidden">0</property>
                                                     <property name="id">wxID_ANY</property>
-                                                    <property name="label">Lock Aspect</property>
+                                                    <property name="label">Lock Aspect Ratio</property>
                                                     <property name="markup">0</property>
                                                     <property name="max_size"></property>
                                                     <property name="maximize_button">0</property>
@@ -1439,15 +1439,14 @@
                                                     <property name="toolbar_pane">0</property>
                                                     <property name="tooltip"></property>
                                                     <property name="validator_data_type"></property>
-                                                    <property name="validator_style">wxFILTER_NONE</property>
-                                                    <property name="validator_type">wxDefaultValidator</property>
+                                                    <property name="validator_style">wxFILTER_NUMERIC</property>
+                                                    <property name="validator_type">wxTextValidator</property>
                                                     <property name="validator_variable"></property>
                                                     <property name="value">300</property>
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style"></property>
-                                                    <event name="OnLeaveWindow">UpdateUnitTextValueX</event>
-                                                    <event name="OnText">OnResolutionChange</event>
+                                                    <event name="OnText">OnSizeChangeX</event>
                                                 </object>
                                             </object>
                                             <object class="sizeritem" expanded="0">
@@ -1505,15 +1504,14 @@
                                                     <property name="toolbar_pane">0</property>
                                                     <property name="tooltip"></property>
                                                     <property name="validator_data_type"></property>
-                                                    <property name="validator_style">wxFILTER_NONE</property>
-                                                    <property name="validator_type">wxDefaultValidator</property>
+                                                    <property name="validator_style">wxFILTER_NUMERIC</property>
+                                                    <property name="validator_type">wxTextValidator</property>
                                                     <property name="validator_variable"></property>
                                                     <property name="value">300</property>
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style"></property>
-                                                    <event name="OnLeaveWindow">UpdateUnitTextValueY</event>
-                                                    <event name="OnText">OnResolutionChange</event>
+                                                    <event name="OnText">OnSizeChangeY</event>
                                                 </object>
                                             </object>
                                             <object class="sizeritem" expanded="0">
@@ -1578,7 +1576,7 @@
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style"></property>
-                                                    <event name="OnChoice">OnResolutionChange</event>
+                                                    <event name="OnChoice">OnSizeUnitChange</event>
                                                 </object>
                                             </object>
                                         </object>

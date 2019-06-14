@@ -41,9 +41,17 @@ public:
     IMAGE_SIZE();
 
     void Set( float aValue, UNIT aUnit );
+    void SetUnit( UNIT aUnit )
+    {
+        m_unit = aUnit;
+    }
 
 
     void SetInputResolution( int aResolution );
+    int  GetInputResolution()
+    {
+        return m_originalResolution;
+    }
 
     float GetValue();
 
@@ -100,16 +108,10 @@ private:
     void Binarize( double aThreshold ); // aThreshold = 0.0 (black level) to 1.0 (white level)
     void OnNegativeClicked( wxCommandEvent& event ) override;
     void OnThresholdChange( wxScrollEvent& event ) override;
-    void OnResolutionChange( wxCommandEvent& event ) override;
 
-    // called when texts controls which handle the image resolution
-    // lose the focus, to ensure the right values are displayed
-    // because the m_imageDPI are clipped to acceptable values, and
-    // the text displayed could be differ during text editing
-    // We are using ChangeValue here to avoid generating a wxEVT_TEXT event.
-    void UpdateUnitTextValueX( wxMouseEvent& event ) override;
-
-    void UpdateUnitTextValueY( wxMouseEvent& event ) override;
+    void OnSizeChangeX( wxCommandEvent& event ) override;
+    void OnSizeChangeY( wxCommandEvent& event ) override;
+    void OnSizeUnitChange( wxCommandEvent& event ) override;
 
     void ToggleAspectRatioLock( wxCommandEvent& event ) override;
 
@@ -133,8 +135,6 @@ private:
     wxBitmap m_Greyscale_Bitmap;
     wxImage  m_NB_Image;
     wxBitmap m_BN_Bitmap;
-    //wxSize          m_imageDPI;     // The initial image resolution. When unknown,
-    // set to DEFAULT_DPI x DEFAULT_DPI per Inch
     IMAGE_SIZE                    m_outputSizeX;
     IMAGE_SIZE                    m_outputSizeY;
     bool                          m_Negative;
@@ -145,6 +145,7 @@ private:
     std::unique_ptr<wxConfigBase> m_config;
     bool                          m_exportToClipboard;
     bool                          m_AspectRatioLocked;
+    float                         m_AspectRatio;
     std::map<UNIT, wxString>      m_unitMap = { { MM, "mm" }, { INCH, "Inch" }, { MILS, "Mils" },
         { DPI, "DPI" } };
 };

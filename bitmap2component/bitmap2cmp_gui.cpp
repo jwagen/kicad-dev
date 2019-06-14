@@ -163,7 +163,9 @@ BM2CMP_FRAME::BM2CMP_FRAME( KIWAY* aKiway, wxWindow* aParent ) :
     m_outputSizeY.Set( DEFAULT_SIZE_VALUE, UNIT::DEFAULT_SIZE_UNIT );
 
     //Set icon for aspect ratio
-    //m_AspectRatioLockButton->SetBitmap( KiBitmap( locked_xpm ) );
+    m_AspectRatioLocked = true;
+    m_AspectRatio = 1;
+    m_AspectRatioLockButton->SetBitmap( KiBitmap( locked_xpm ) );
 
     // Give an icon
     wxIcon icon;
@@ -310,8 +312,9 @@ bool BM2CMP_FRAME::OpenProjectFiles( const std::vector<wxString>& aFileSet, int 
     int h  = m_Pict_Bitmap.GetHeight();
     int w  = m_Pict_Bitmap.GetWidth();
 
-    m_outputSizeX.SetInputResolution( h );
-    m_outputSizeY.SetInputResolution( w );
+    m_outputSizeX.SetInputResolution( w );
+    m_outputSizeY.SetInputResolution( h );
+    m_AspectRatio = (float) w / (float) h;
 
     // Determine image resolution in DPI (does not existing in all formats).
     // the resolution can be given in bit per inches or bit per cm in file
@@ -339,6 +342,9 @@ bool BM2CMP_FRAME::OpenProjectFiles( const std::vector<wxString>& aFileSet, int 
     m_InputXValueDPI->SetLabel( wxString::Format( wxT( "%d" ), imageDPIx ) );
     m_InputYValueDPI->SetLabel( wxString::Format( wxT( "%d" ), imageDPIy ) );
 
+    //Update display to keep aspectratio
+    auto fakeEvent = wxCommandEvent();
+    OnSizeChangeX( fakeEvent );
 
     updateImageInfo();
 
@@ -398,29 +404,47 @@ void BM2CMP_FRAME::updateImageInfo()
 }
 
 
-void BM2CMP_FRAME::OnResolutionChange( wxCommandEvent& event )
+void BM2CMP_FRAME::OnSizeChangeX( wxCommandEvent& event )
 {
-    double tmp;
+    double setSize;
+    if( m_UnitSizeX->GetValue().ToDouble( &setSize ) )
+    {
+        m_outputSizeX.Set( setSize, (UNIT) m_PixelUnit->GetSelection() );
 
-
-    if( m_UnitSizeX->GetValue().ToDouble( &tmp ) )
-        m_outputSizeX.Set( tmp, (UNIT) m_PixelUnit->GetSelection() );
-
-    if( m_UnitSizeY->GetValue().ToDouble( &tmp ) )
-        m_outputSizeY.Set( tmp, (UNIT) m_PixelUnit->GetSelection() );
-
+        if( m_AspectRatioLocked )
+        {
+            double calculatedY = setSize / m_AspectRatio;
+            m_UnitSizeY->ChangeValue( wxString::Format( wxT( "%.2f" ), calculatedY ) );
+            m_outputSizeY.Set( calculatedY, (UNIT) m_PixelUnit->GetSelection() );
+        }
+    }
     updateImageInfo();
 }
 
-void BM2CMP_FRAME::UpdateUnitTextValueX( wxMouseEvent& event )
+void BM2CMP_FRAME::OnSizeChangeY( wxCommandEvent& event )
 {
-    m_UnitSizeX->ChangeValue( wxString::Format( wxT( "%.2f" ), m_outputSizeX.GetValue( ) ) );
+    double setSize;
+
+    if( m_UnitSizeY->GetValue().ToDouble( &setSize ) )
+    {
+        m_outputSizeY.Set( setSize, (UNIT) m_PixelUnit->GetSelection() );
+        if( m_AspectRatioLocked )
+        {
+            double calculatedX = setSize * m_AspectRatio;
+            m_UnitSizeX->ChangeValue( wxString::Format( wxT( "%.2f" ), calculatedX ) );
+            m_outputSizeX.Set( calculatedX, (UNIT) m_PixelUnit->GetSelection() );
+        }
+    }
+    updateImageInfo();
 }
 
-void BM2CMP_FRAME::UpdateUnitTextValueY( wxMouseEvent& event )
+void BM2CMP_FRAME::OnSizeUnitChange( wxCommandEvent& event )
 {
-    m_UnitSizeY->ChangeValue( wxString::Format( wxT( "%.2f" ), m_outputSizeY.GetValue( ) ) );
+    m_outputSizeX.SetUnit( (UNIT) m_PixelUnit->GetSelection() );
+    m_outputSizeY.SetUnit( (UNIT) m_PixelUnit->GetSelection() );
+    updateImageInfo();
 }
+
 void BM2CMP_FRAME::ToggleAspectRatioLock( wxCommandEvent& event )
 {
     m_AspectRatioLocked = !m_AspectRatioLocked;
@@ -428,6 +452,9 @@ void BM2CMP_FRAME::ToggleAspectRatioLock( wxCommandEvent& event )
     if( m_AspectRatioLocked )
     {
         m_AspectRatioLockButton->SetBitmap( KiBitmap( locked_xpm ) );
+        //Force resolution update when aspect ratio is locked
+        auto fakeEvent = wxCommandEvent();
+        OnSizeChangeX( fakeEvent );
     }
 
     else
