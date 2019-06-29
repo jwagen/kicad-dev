@@ -22,14 +22,14 @@
  */
 
 #include <database_plugin.h>
-//#include <soci/soci.h>
-//#include <soci/postgresql/soci-postgresql.h>
-#include "Poco/Data/Session.h"
-#include "Poco/Data/SQLite/Connector.h"
+#include <soci/soci.h>
+#include <soci/postgresql/soci-postgresql.h>
+//#include "Poco/Data/Session.h"
+//#include "Poco/Data/SQLite/Connector.h"
 
-using namespace Poco::Data::Keywords;
-using Poco::Data::Session;
-using Poco::Data::Statement;
+//using namespace Poco::Data::Keywords;
+//using Poco::Data::Session;
+//using Poco::Data::Statement;
 
 DATABASE_PLUGIN::DATABASE_PLUGIN()
 {
@@ -56,10 +56,10 @@ const wxString DATABASE_PLUGIN::GetFileExtension() const
 void DATABASE_PLUGIN::FootprintEnumerate( wxArrayString& aFootprintNames,
         const wxString& aLibraryPath, const PROPERTIES* aProperties )
 {
-    Poco::Data::SQLite::Connector::registerConnector();
-    Session session("SQLite", "sample.db");
-    //s/oci::session sql("postgresql://dbname=mydb");
-    //sql.open("postgresql://dbname=mydb");
+    //Poco::Data::SQLite::Connector::registerConnector();
+    //Session session("SQLite", "sample.db");
+    soci::session sql("postgresql://dbname=mydb");
+    sql.open("postgresql://dbname=mydb");
 }
 
 

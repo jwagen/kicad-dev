@@ -21,6 +21,7 @@ include_directories(
     ${OCE_INCLUDE_DIRS}
     ${OCC_INCLUDE_DIR}
     ${OPENSSL_INCLUDE_DIR}
+    ${SOCI_INCLUDE_DIRS}
     )
 
 
@@ -422,6 +423,7 @@ target_link_libraries( common
     ${Boost_LIBRARIES}
     ${CURL_LIBRARIES}
     ${OPENSSL_LIBRARIES}        # empty on Apple
+    ${SOCI_LIBRARY}
     ${wxWidgets_LIBRARIES}
     )
 

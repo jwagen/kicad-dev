@@ -579,7 +579,7 @@ endif()
 
 # SOSI for database plugin
 #find_package(Soci REQUIRED)
-find_package(Poco 1.8.0 REQUIRED Data Util)
+#find_package(Poco 1.8.0 REQUIRED Data Util)
 
 #
 # Find Cairo library, required
@@ -610,6 +610,8 @@ endif()
 if( KICAD_SPICE )
     find_package( ngspice REQUIRED )
 endif()
+
+find_package( Soci REQUIRED )
 
 # Find OpenCascade Community Edition, required for STEP plugin and tools
 if( KICAD_USE_OCE )
